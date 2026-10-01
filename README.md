@@ -52,7 +52,7 @@ using FrameworkQ.TextLayout;
 ```csharp
 var doc = TextLayoutEngine.Format(text, new LayoutOptions
 {
-    Question = "Which channel spent the most?",    // optional: sharpens the headline
+    Question = "Which loaf sold the most?",        // optional: sharpens the headline
     Data = new[] { new DataTable(columns, rows) }, // optional: exact values the text was written from
     Profile = LayoutProfile.Answer,                 // Answer | Insight | Alert
 });
@@ -72,51 +72,80 @@ Fifteen graded calls, each followed by the email HTML that call produced, are in
 ### A worked example
 
 ```csharp
+var bakery = Lexicon.General with
+{
+    Entities = new[]
+    {
+        new LexiconEntity("Sourdough", "loaf", new[] { "sourdough" }),
+        new LexiconEntity("Rye", "loaf", new[] { "rye" }),
+        new LexiconEntity("Focaccia", "loaf", new[] { "focaccia" }),
+    },
+    Metrics = new[]
+    {
+        new LexiconMetric("Sales", new[] { "sales", "sale", "took in", "takings" }, MetricUnit.Money),
+        new LexiconMetric("Loaves", new[] { "loaves" }, MetricUnit.Count),
+        new LexiconMetric("Customers", new[] { "customers", "customer" }, MetricUnit.Count),
+        new LexiconMetric("Unit cost", new[] { "cost per loaf", "unit cost" }, MetricUnit.Money),
+    },
+};
+
 const string text =
-    "You spent $645.00 over the last 30 days for 120,000 clicks and 10 web conversions. " +
-    "TikTok spent the most, at $310.00 of $645.00. " +
-    "Note that today's data is partial and excluded.";
+    "The bakery took in $1,240.00 over the last 7 days for 860 loaves and 410 customers. " +
+    "Sourdough sold the most, at 310 loaves of 860. " +
+    "Note that Sunday's till is partial and excluded.";
 
 var doc = TextLayoutEngine.Format(text, new LayoutOptions
 {
-    Question = "Which channel spent the most?",
+    Question = "What did the bakery take in over the last 7 days?",
+    Lexicon = bakery,   // the default lexicon is the marketing one; this call opts out
 });
 ```
 
 `LayoutRenderers.PlainText(doc)` prints:
 
 ```
-You spent $645.00 over the last 30 days for 120,000 clicks and 10 web conversions.
+The bakery took in $1,240.00 over the last 7 days for 860 loaves and 410 customers.
 
-Spend: $645.00  ·  Clicks: 120,000  ·  Web conversions: 10
+Sales: $1,240.00  ·  Loaves: 860  ·  Customers: 410
 
-TikTok spent the most, at $310.00 of $645.00.
+Sourdough sold the most, at 310 loaves of 860.
 
-! Note that today's data is partial and excluded.
+! Note that Sunday's till is partial and excluded.
 ```
 
 `LayoutRenderers.Html(doc, HtmlStyle.Email)` is the same layout as HTML. Pasted straight into
 this markdown file, a viewer renders it:
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">You spent $645.00 over the last 30 days for 120,000 clicks and 10 web conversions.</p>
-<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0"><tr>
-<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top"><div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div><div style="font-size:20px;font-weight:700;color:#111827">$645.00</div></td>
-<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top"><div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div><div style="font-size:20px;font-weight:700;color:#111827">120,000</div></td>
-<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top"><div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Web conversions</div><div style="font-size:20px;font-weight:700;color:#111827">10</div></td>
-</tr></table>
-<p style="margin:0 0 12px">TikTok spent the most, at $310.00 of $645.00.</p>
-<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Note that today&#39;s data is partial and excluded.</div>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">The bakery took in $1,240.00 over the last 7 days for 860 loaves and 410 customers.</p>
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
+<tr>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Sales</div>
+<div style="font-size:20px;font-weight:700;color:#111827">$1,240.00</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Loaves</div>
+<div style="font-size:20px;font-weight:700;color:#111827">860</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Customers</div>
+<div style="font-size:20px;font-weight:700;color:#111827">410</div>
+</td>
+</tr>
+</table>
+<p style="margin:0 0 12px">Sourdough sold the most, at 310 loaves of 860.</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Note that Sunday&#39;s till is partial and excluded.</div>
 </div>
 
 The same document, block by block:
 
 | Order | `Kind` | `Origin` | What it holds |
 |---|---|---|---|
-| 1 | `Headline` | `Salience` | "You spent $645.00 over the last 30 days…" |
-| 2 | `KeyFigures` | `Figures` | Spend $645.00, Clicks 120,000, Web conversions 10 |
-| 3 | `Paragraph` | `Prose` | "TikTok spent the most, at $310.00 of $645.00." |
-| 4 | `Callout` | `Role` | The partial-data note, `Tone = Warning` |
+| 1 | `Headline` | `Salience` | "The bakery took in $1,240.00 over the last 7 days…" |
+| 2 | `KeyFigures` | `Figures` | Sales $1,240.00, Loaves 860, Customers 410 |
+| 3 | `Paragraph` | `Prose` | "Sourdough sold the most, at 310 loaves of 860." |
+| 4 | `Callout` | `Role` | The partial-till note, `Tone = Warning` |
 
 ## Read the document
 
@@ -192,14 +221,14 @@ seven fields. Unused ones are `null`.
 ```json
 {
   "blocks": [
-    { "type": "headline", "text": "You spent $645.00 over the last 30 days for 120,000 clicks and 10 web conversions.", "tone": null, "items": null, "metrics": null, "columns": null, "rows": null },
+    { "type": "headline", "text": "The bakery took in $1,240.00 over the last 7 days for 860 loaves and 410 customers.", "tone": null, "items": null, "metrics": null, "columns": null, "rows": null },
     { "type": "metrics", "text": null, "tone": null, "items": null, "metrics": [
-        { "label": "Spend", "value": "$645.00", "note": null, "trend": null },
-        { "label": "Clicks", "value": "120,000", "note": null, "trend": null },
-        { "label": "Web conversions", "value": "10", "note": null, "trend": null }
+        { "label": "Sales", "value": "$1,240.00", "note": null, "trend": null },
+        { "label": "Loaves", "value": "860", "note": null, "trend": null },
+        { "label": "Customers", "value": "410", "note": null, "trend": null }
       ], "columns": null, "rows": null },
-    { "type": "paragraph", "text": "TikTok spent the most, at $310.00 of $645.00.", "tone": null, "items": null, "metrics": null, "columns": null, "rows": null },
-    { "type": "callout", "text": "Note that today's data is partial and excluded.", "tone": "warning", "items": null, "metrics": null, "columns": null, "rows": null }
+    { "type": "paragraph", "text": "Sourdough sold the most, at 310 loaves of 860.", "tone": null, "items": null, "metrics": null, "columns": null, "rows": null },
+    { "type": "callout", "text": "Note that Sunday's till is partial and excluded.", "tone": "warning", "items": null, "metrics": null, "columns": null, "rows": null }
   ]
 }
 ```
@@ -307,7 +336,7 @@ var doc = TextLayoutEngine.Format(report, new LayoutOptions
 });
 ```
 
-On a wall of TikTok sentences followed by a wall of fraud sentences, this yields a headline and
+On a wall of sourdough sentences followed by a wall of oven-fault sentences, this yields a headline and
 two paragraphs, one per topic.
 
 **`Alert`**. A one- or two-sentence notice. The first sentence is the headline, and no key-figure
@@ -460,9 +489,12 @@ return LayoutRenderers.Json(doc);
 
 Each sample below was run through `TextLayoutEngine.Format` before it was written down. None of
 them fell back. The block line is `Kind / Origin` in display order. Under it is
-`LayoutRenderers.Html(doc, HtmlStyle.Email)`, pasted as HTML so the markdown renders the layout:
-a headline, figure cards, paragraphs, lists, tables and callouts. `**bold**` in a table cell
-becomes `<strong>`.
+`LayoutRenderers.Html(doc, HtmlStyle.Email)`, pasted as HTML so the markdown renders the layout.
+
+The calls are a week at a bakery, plus one weekend at the cake case. They use the `bakery` lexicon
+from the worked example wherever a loaf name or a sales figure has to be recognised.
+`Lexicon.Marketing` remains the default for a call that does not pass one. `**bold**` in a table
+cell becomes `<strong>`.
 
 Markdown allows that raw HTML. GitHub's readme sanitizer removes `style` and `class`, so on
 github.com the colours and card borders are dropped and the same markup shows as paragraphs,
@@ -471,48 +503,49 @@ warning.
 
 ### Simple
 
-Short text, default options, one thing happening.
+Short text, and the default options except where a loaf name has to be read.
 
 #### 1. A one-sentence answer
 
 One sentence is the headline. A single figure does not become a card row: cards need two different metrics.
 
 ```csharp
-var doc = TextLayoutEngine.Format("You spent $645.00 over the last 30 days.");
+var doc = TextLayoutEngine.Format("The bakery took in $1,240.00 over the last 7 days.");
 ```
 
 Blocks: Headline / Salience
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">You spent $645.00 over the last 30 days.</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">The bakery took in $1,240.00 over the last 7 days.</p>
 </div>
 
 #### 2. Totals become figure cards
 
-Spend, clicks and web conversions are three aggregate metrics, so they become cards under the headline.
+Sales, loaves and customers are three metrics in `bakery`, so they become cards under the headline.
 
 ```csharp
 var doc = TextLayoutEngine.Format(
-    "You spent $645.00 over the last 30 days for 120,000 clicks and 10 web conversions.");
+    "The bakery took in $1,240.00 over the last 7 days for 860 loaves and 410 customers.",
+    new LayoutOptions { Lexicon = bakery });
 ```
 
 Blocks: Headline / Salience → KeyFigures / Figures
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">You spent $645.00 over the last 30 days for 120,000 clicks and 10 web conversions.</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">The bakery took in $1,240.00 over the last 7 days for 860 loaves and 410 customers.</p>
 <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
 <tr>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
-<div style="font-size:20px;font-weight:700;color:#111827">$645.00</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Sales</div>
+<div style="font-size:20px;font-weight:700;color:#111827">$1,240.00</div>
 </td>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
-<div style="font-size:20px;font-weight:700;color:#111827">120,000</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Loaves</div>
+<div style="font-size:20px;font-weight:700;color:#111827">860</div>
 </td>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Web conversions</div>
-<div style="font-size:20px;font-weight:700;color:#111827">10</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Customers</div>
+<div style="font-size:20px;font-weight:700;color:#111827">410</div>
 </td>
 </tr>
 </table>
@@ -524,22 +557,22 @@ Items that do not share one entity-and-figure shape are kept as bullets. The int
 
 ```csharp
 var doc = TextLayoutEngine.Format("""
-    Three things stand out this month:
+    Three things stood out this week:
 
-    - Google Ads produced the most web conversions on the least spend.
-    - Facebook's spend brought no web conversions.
-    - TikTok delivered the most clicks at a low cost per click.
+    - The sourdough sold out before noon.
+    - The rye stayed on the shelf until close.
+    - The focaccia went mostly at lunch.
     """);
 ```
 
 Blocks: Headline / Salience → Bullets / Markdown
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Three things stand out this month:</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Three things stood out this week:</p>
 <ul style="margin:0 0 12px;padding-left:20px">
-<li>Google Ads produced the most web conversions on the least spend.</li>
-<li>Facebook&#39;s spend brought no web conversions.</li>
-<li>TikTok delivered the most clicks at a low cost per click.</li>
+<li>The sourdough sold out before noon.</li>
+<li>The rye stayed on the shelf until close.</li>
+<li>The focaccia went mostly at lunch.</li>
 </ul>
 </div>
 
@@ -547,34 +580,34 @@ Blocks: Headline / Salience → Bullets / Markdown
 
 ```csharp
 var doc = TextLayoutEngine.Format(
-    "Spend rose this month. First, TikTok grew. Second, Facebook held. Finally, Google Ads fell.");
+    "Saturday was the busy day. First, the morning queue reached the door. Second, the lunch rush held. Finally, the afternoon eased off.");
 ```
 
 Blocks: Headline / Salience → Bullets / Enumeration
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Spend rose this month.</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Saturday was the busy day.</p>
 <ul style="margin:0 0 12px;padding-left:20px">
-<li>First, TikTok grew.</li>
-<li>Second, Facebook held.</li>
-<li>Finally, Google Ads fell.</li>
+<li>First, the morning queue reached the door.</li>
+<li>Second, the lunch rush held.</li>
+<li>Finally, the afternoon eased off.</li>
 </ul>
 </div>
 
 #### 5. A caveat becomes a warning
 
-"Partial" is a warning cue, so the note leaves the paragraph and sits at the end.
+"Partial" is a warning cue, so the note leaves the paragraph and sits at the end. The cue lists live on `Lexicon.General`, which the marketing default inherits, so this call passes no lexicon.
 
 ```csharp
 var doc = TextLayoutEngine.Format(
-    "You spent $645.00 over the last 30 days. Note that today's data is partial and excluded.");
+    "The bakery took in $1,240.00 over the last 7 days. Note that Sunday's till is partial and excluded.");
 ```
 
 Blocks: Headline / Salience → Callout (Warning) / Role
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">You spent $645.00 over the last 30 days.</p>
-<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Note that today&#39;s data is partial and excluded.</div>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">The bakery took in $1,240.00 over the last 7 days.</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Note that Sunday&#39;s till is partial and excluded.</div>
 </div>
 
 ### Moderate
@@ -583,53 +616,58 @@ One structural repair, or one option, on a short text.
 
 #### 6. The answer is buried, and the question pulls it up
 
-`Question` adds weight to the sentence that overlaps it. The background stays, under the answer.
+`Question` adds weight to the sentence that overlaps it. The staffing note stays, under the answer.
 
 ```csharp
 var doc = TextLayoutEngine.Format(
-    "Here is some background on how the account is set up. Campaigns run on three platforms. " +
-    "TikTok spent the most in the last 30 days, at $310.00 of $645.00.",
-    new LayoutOptions { Question = "Which channel spent the most in the last 30 days?" });
+    "Here is how the week was staffed. Two bakers covered the early shift. " +
+    "Sourdough sold the most, at 310 loaves of 860.",
+    new LayoutOptions
+    {
+        Question = "Which loaf sold the most this week?",
+        Lexicon = bakery,
+    });
 ```
 
 Blocks: Headline / Salience → Paragraph / Prose
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">TikTok spent the most in the last 30 days, at $310.00 of $645.00.</p>
-<p style="margin:0 0 12px">Here is some background on how the account is set up. Campaigns run on three platforms.</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Sourdough sold the most, at 310 loaves of 860.</p>
+<p style="margin:0 0 12px">Here is how the week was staffed. Two bakers covered the early shift.</p>
 </div>
 
 #### 7. A comparison written as prose becomes a table
 
-Three entity–figure pairs in one sentence are replaced by the table. The sentence that only leads in stays as the headline.
+Three loaf–sales pairs in one sentence are replaced by the table. The sentence that only leads in stays as the headline. `Kind` on the entity (`loaf`) becomes the first column.
 
 ```csharp
 var doc = TextLayoutEngine.Format(
-    "Spend was led by TikTok. By channel: TikTok spent $310.00, Facebook $240.00 and Google Ads $95.00.");
+    "Sales were led by sourdough. By loaf: Sourdough took in $310.00, Rye $240.00 and Focaccia $95.00.",
+    new LayoutOptions { Lexicon = bakery });
 ```
 
 Blocks: Headline / Salience → Table / EntityPairs
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Spend was led by TikTok.</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Sales were led by sourdough.</p>
 <table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
 <thead>
 <tr>
-<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Spend</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Loaf</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Sales</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Sourdough</td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$310.00</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Rye</td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$240.00</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Google Ads</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Focaccia</td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$95.00</td>
 </tr>
 </tbody>
@@ -638,41 +676,42 @@ Blocks: Headline / Salience → Table / EntityPairs
 
 #### 8. Workings stay in a detail column
 
-The figure outside the brackets is the cell. The brackets are kept verbatim.
+The figure outside the brackets is the cell. The brackets are kept verbatim. "Cost per loaf" is the `Unit cost` metric, so that is the column name.
 
 ```csharp
 var doc = TextLayoutEngine.Format(
-    "CPC differs a lot by channel. Cost per click worked out at $0.0015 for Google Ads ($95.00 ÷ 55,000), " +
-    "$0.0048 for TikTok ($310.00 ÷ 48,000) and $0.0086 for Facebook ($240.00 ÷ 17,000).");
+    "The cost of a loaf differs. Cost per loaf worked out at $0.42 for Focaccia ($95.00 ÷ 226), " +
+    "$1.72 for Sourdough ($310.00 ÷ 180) and $2.18 for Rye ($240.00 ÷ 110).",
+    new LayoutOptions { Lexicon = bakery });
 ```
 
 Blocks: Headline / Salience → Table / EntityPairs
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">CPC differs a lot by channel.</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">The cost of a loaf differs.</p>
 <table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
 <thead>
 <tr>
-<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">CPC</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Loaf</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Unit cost</th>
 <th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Detail</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Google Ads</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0015</td>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">($95.00 &#247; 55,000)</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Focaccia</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.42</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">($95.00 &#247; 226)</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0048</td>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">($310.00 &#247; 48,000)</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Sourdough</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$1.72</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">($310.00 &#247; 180)</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0086</td>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">($240.00 &#247; 17,000)</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Rye</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$2.18</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">($240.00 &#247; 110)</td>
 </tr>
 </tbody>
 </table>
@@ -680,44 +719,45 @@ Blocks: Headline / Salience → Table / EntityPairs
 
 #### 9. Repeated list items become one table
 
-Three items with the same shape (`Cost per click: <channel> <amount> <note>`) collapse to one table.
+Three items with the same shape (`Cost per loaf: <loaf> <amount> <note>`) collapse to one table.
 
 ```csharp
 var doc = TextLayoutEngine.Format("""
-    Costs per click:
+    Costs per loaf:
 
-    - Cost per click: Google Ads $0.0015 (lowest)
-    - Cost per click: TikTok $0.0048 (middle)
-    - Cost per click: Facebook $0.0086 (highest)
-    """);
+    - Cost per loaf: Focaccia $0.42 (lowest)
+    - Cost per loaf: Sourdough $1.72 (middle)
+    - Cost per loaf: Rye $2.18 (highest)
+    """,
+    new LayoutOptions { Lexicon = bakery });
 ```
 
 Blocks: Headline / Salience → Table / Template
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Costs per click:</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Costs per loaf:</p>
 <table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
 <thead>
 <tr>
-<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Cost per click</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Loaf</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Cost per loaf</th>
 <th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Detail</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Google Ads</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0015</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Focaccia</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.42</td>
 <td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(lowest)</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0048</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Sourdough</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$1.72</td>
 <td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(middle)</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0086</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Rye</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$2.18</td>
 <td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(highest)</td>
 </tr>
 </tbody>
@@ -726,52 +766,54 @@ Blocks: Headline / Salience → Table / Template
 
 #### 10. A markdown table is kept, and its total row becomes the cards
 
+The card labels are the column headers. No custom lexicon is required.
+
 ```csharp
 var doc = TextLayoutEngine.Format("""
-    Spend by channel:
+    Sales by loaf:
 
-    | Channel | Spend | Clicks |
+    | Loaf | Sales | Loaves |
     |---|---|---|
-    | TikTok | $310.00 | 48,000 |
-    | Facebook | $240.00 | 17,000 |
-    | **Total** | **$550.00** | **65,000** |
+    | Sourdough | $310.00 | 180 |
+    | Rye | $240.00 | 110 |
+    | **Total** | **$550.00** | **290** |
     """);
 ```
 
 Blocks: Headline / Salience → KeyFigures / Figures → Table / Markdown
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Spend by channel:</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Sales by loaf:</p>
 <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
 <tr>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Sales</div>
 <div style="font-size:20px;font-weight:700;color:#111827">$550.00</div>
 </td>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
-<div style="font-size:20px;font-weight:700;color:#111827">65,000</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Loaves</div>
+<div style="font-size:20px;font-weight:700;color:#111827">290</div>
 </td>
 </tr>
 </table>
 <table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
 <thead>
 <tr>
-<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Spend</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Clicks</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Loaf</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Sales</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Loaves</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Sourdough</td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$310.00</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">48,000</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">180</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Rye</td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$240.00</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">17,000</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">110</td>
 </tr>
 <tr>
 <td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">
@@ -781,7 +823,7 @@ Blocks: Headline / Salience → KeyFigures / Figures → Table / Markdown
 <strong>$550.00</strong>
 </td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">
-<strong>65,000</strong>
+<strong>290</strong>
 </td>
 </tr>
 </tbody>
@@ -792,131 +834,144 @@ Blocks: Headline / Salience → KeyFigures / Figures → Table / Markdown
 
 Several structures in one call: a question, a profile, a lexicon, tables, lists and callouts together.
 
-#### 11. A channel report
+#### 11. A week at the counter
 
-A markdown table, a total row, a follow-up sentence and a warning. The question is passed so the opening comparison is the headline. Cards come from the total row, not from one channel.
+A markdown table, a total row, a follow-up sentence and a warning. The question is passed so the opening comparison is the headline. Cards come from the total row, not from one loaf.
 
 ```csharp
 var doc = TextLayoutEngine.Format("""
-    Over the last 30 days (2 Mar to 31 Mar), TikTok took the most spend and Google Ads the most clicks.
+    Over the last 7 days (2 Mar to 8 Mar), sourdough took the most sales and focaccia the most loaves.
 
-    | Channel | Spend | Clicks | Web conversions |
+    | Loaf | Sales | Loaves | Customers |
     |---|---|---|---|
-    | TikTok | $310.00 | 48,000 | 5 |
-    | Facebook | $240.00 | 17,000 | 0 |
-    | Google Ads | $95.00 | 55,000 | 7 |
-    | **Total** | **$645.00** | **120,000** | **12** |
+    | Sourdough | $620.00 | 180 | 140 |
+    | Rye | $480.00 | 110 | 90 |
+    | Focaccia | $140.00 | 226 | 70 |
+    | **Total** | **$1,240.00** | **516** | **300** |
 
-    TikTok is almost half of all your spend ($310.00 of $645.00).
+    Sourdough is half of the week's sales ($620.00 of $1,240.00).
 
-    The web conversion counts are tiny (0–7), so any per-conversion reading rests on very little.
+    The customer counts for focaccia are tiny (70), so any per-customer reading rests on very little.
     """,
-    new LayoutOptions { Question = "Compare Facebook, TikTok and Google Ads on spend and clicks." });
+    new LayoutOptions
+    {
+        Question = "Compare sourdough, rye and focaccia on sales and loaves.",
+        Lexicon = bakery,
+    });
 ```
 
 Blocks: Headline / Salience → KeyFigures / Figures → Table / Markdown → Paragraph / Prose → Callout (Warning) / Role
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Over the last 30 days (2 Mar to 31 Mar), TikTok took the most spend and Google Ads the most clicks.</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Over the last 7 days (2 Mar to 8 Mar), sourdough took the most sales and focaccia the most loaves.</p>
 <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
 <tr>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
-<div style="font-size:20px;font-weight:700;color:#111827">$645.00</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Sales</div>
+<div style="font-size:20px;font-weight:700;color:#111827">$1,240.00</div>
 </td>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
-<div style="font-size:20px;font-weight:700;color:#111827">120,000</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Loaves</div>
+<div style="font-size:20px;font-weight:700;color:#111827">516</div>
 </td>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Web conversions</div>
-<div style="font-size:20px;font-weight:700;color:#111827">12</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Customers</div>
+<div style="font-size:20px;font-weight:700;color:#111827">300</div>
 </td>
 </tr>
 </table>
 <table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
 <thead>
 <tr>
-<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Spend</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Clicks</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Web conversions</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Loaf</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Sales</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Loaves</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Customers</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$310.00</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">48,000</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">5</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Sourdough</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$620.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">180</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">140</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$240.00</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">17,000</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">0</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Rye</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$480.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">110</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">90</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Google Ads</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$95.00</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">55,000</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">7</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Focaccia</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$140.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">226</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">70</td>
 </tr>
 <tr>
 <td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">
 <strong>Total</strong>
 </td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">
-<strong>$645.00</strong>
+<strong>$1,240.00</strong>
 </td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">
-<strong>120,000</strong>
+<strong>516</strong>
 </td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">
-<strong>12</strong>
+<strong>300</strong>
 </td>
 </tr>
 </tbody>
 </table>
-<p style="margin:0 0 12px">TikTok is almost half of all your spend ($310.00 of $645.00).</p>
-<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">The web conversion counts are tiny (0–7), so any per-conversion reading rests on very little.</div>
+<p style="margin:0 0 12px">Sourdough is half of the week&#39;s sales ($620.00 of $1,240.00).</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">The customer counts for focaccia are tiny (70), so any per-customer reading rests on very little.</div>
 </div>
 
-#### 12. A long summary, split by topic
+#### 12. A long note, split by topic
 
-`Profile = Insight` breaks the wall of sentences where the topic shifts, from TikTok performance to fraud screening. The closing limitation is a warning.
+`Profile = Insight` breaks the wall of sentences where the topic shifts, from sourdough to the oven log. The closing limitation is a warning.
 
 ```csharp
 var doc = TextLayoutEngine.Format(
-    "TikTok spend rose to $310.00 this month. TikTok clicks reached 48,000 at a low cost. " +
-    "TikTok also drove 5 web conversions. TikTok remains the largest channel by spend. " +
-    "Fraud screening flagged 210 high-risk events. Fraud risk events were concentrated on bot traffic. " +
-    "Most fraud risk events came from one layer. Fraud screening covered every day of the window. " +
-    "These are risk scores, not confirmed fraud.",
-    new LayoutOptions { Profile = LayoutProfile.Insight, Question = "Write a monthly summary." });
+    "Sourdough sales rose to $620.00 this week. Sourdough loaves reached 180 at a steady pace. " +
+    "Sourdough also drew 140 customers. Sourdough remains the largest loaf by sales. " +
+    "The oven log flagged 4 high-heat faults. The oven faults were concentrated on the Monday bake. " +
+    "Most oven faults came from one deck. The oven check covered every day of the week. " +
+    "These fault notes are observations, not confirmed failures.",
+    new LayoutOptions
+    {
+        Profile = LayoutProfile.Insight,
+        Question = "Write the weekly bake note.",
+        Lexicon = bakery,
+    });
 ```
 
 Blocks: Headline / Salience → Paragraph / Prose → Paragraph / Prose → Callout (Warning) / Role
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">TikTok spend rose to $310.00 this month.</p>
-<p style="margin:0 0 12px">TikTok clicks reached 48,000 at a low cost. TikTok also drove 5 web conversions. TikTok remains the largest channel by spend.</p>
-<p style="margin:0 0 12px">Fraud screening flagged 210 high-risk events. Fraud risk events were concentrated on bot traffic. Most fraud risk events came from one layer. Fraud screening covered every day of the window.</p>
-<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">These are risk scores, not confirmed fraud.</div>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Sourdough sales rose to $620.00 this week.</p>
+<p style="margin:0 0 12px">Sourdough loaves reached 180 at a steady pace. Sourdough also drew 140 customers. Sourdough remains the largest loaf by sales.</p>
+<p style="margin:0 0 12px">The oven log flagged 4 high-heat faults. The oven faults were concentrated on the Monday bake. Most oven faults came from one deck. The oven check covered every day of the week.</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">These fault notes are observations, not confirmed failures.</div>
 </div>
 
 #### 13. An answer that declines to decide
 
-The opening refusal is the headline, because it answers a "where should it go?" question by declining. Aggregate spend and clicks become cards. The channel's own $95.00 and 7 conversions stay in the paragraph. The two limitation sentences merge into one warning, and the later decision sentence is an info callout.
+The opening refusal is the headline, because it answers a "where should it go?" question by declining. Sales and loaves become cards. Focaccia's own $140.00 and 70 customers stay in the paragraph. The two limitation sentences merge into one warning, and the later decision sentence is an info callout.
 
 ```csharp
 var doc = TextLayoutEngine.Format(
     "Where the extra $129.00 goes is your team's call, not mine. " +
-    "You spent $645.00 in the last 30 days for 120,000 clicks, and Google Ads had 7 web conversions on $95.00 of spend. " +
-    "Note that the conversion counts are tiny, so treat CPA with caution. " +
-    "The budget settings came back empty, so I can't see how much each campaign could absorb. " +
-    "Where to move the extra budget is your team's decision.",
-    new LayoutOptions { Question = "If I had 20 percent more budget, where should it go?" });
+    "The bakery took in $1,240.00 in the last 7 days for 860 loaves, and focaccia had 70 customers on $140.00 of sales. " +
+    "Note that the customer counts are tiny, so treat the ranking with caution. " +
+    "The supplier list came back empty, so I can't see how much flour each loaf could use. " +
+    "Where to put the extra money is your team's decision.",
+    new LayoutOptions
+    {
+        Question = "If we had $129 more for ingredients, where should it go?",
+        Lexicon = bakery,
+    });
 ```
 
 Blocks: Headline / Salience → KeyFigures / Figures → Paragraph / Prose → Callout (Warning) / Role → Callout (Info) / Role
@@ -926,184 +981,184 @@ Blocks: Headline / Salience → KeyFigures / Figures → Paragraph / Prose → C
 <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
 <tr>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
-<div style="font-size:20px;font-weight:700;color:#111827">$645.00</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Sales</div>
+<div style="font-size:20px;font-weight:700;color:#111827">$1,240.00</div>
 </td>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
-<div style="font-size:20px;font-weight:700;color:#111827">120,000</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Loaves</div>
+<div style="font-size:20px;font-weight:700;color:#111827">860</div>
 </td>
 </tr>
 </table>
-<p style="margin:0 0 12px">You spent $645.00 in the last 30 days for 120,000 clicks, and Google Ads had 7 web conversions on $95.00 of spend.</p>
-<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Note that the conversion counts are tiny, so treat CPA with caution. The budget settings came back empty, so I can&#39;t see how much each campaign could absorb.</div>
-<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#eef2ff;color:#3730a3">Where to move the extra budget is your team&#39;s decision.</div>
+<p style="margin:0 0 12px">The bakery took in $1,240.00 in the last 7 days for 860 loaves, and focaccia had 70 customers on $140.00 of sales.</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Note that the customer counts are tiny, so treat the ranking with caution. The supplier list came back empty, so I can&#39;t see how much flour each loaf could use.</div>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#eef2ff;color:#3730a3">Where to put the extra money is your team&#39;s decision.</div>
 </div>
 
-#### 14. Two periods, in a table the writer already made
+#### 14. Two weeks, in a table the writer already made
 
 The comparison sentence leads. The markdown table is kept, with its signed changes. "Not available" makes the last sentence a warning.
 
 ```csharp
 var doc = TextLayoutEngine.Format("""
-    Over the last 30 days (2 Mar to 31 Mar) against the 30 days before (31 Jan to 1 Mar), spend fell 6.2% while clicks rose 51.0%.
+    Over the last 7 days (2 Mar to 8 Mar) against the 7 days before (23 Feb to 1 Mar), sales fell 6.2% while loaves rose 18.0%.
 
-    | Metric | Last 30 days | Previous 30 days | Change | % change |
+    | Line | Last 7 days | Previous 7 days | Change | % change |
     |---|---|---|---|---|
-    | Spend | $645.00 | $687.60 | -$42.60 | -6.2% |
-    | Clicks | 120,000 | 79,470 | +40,530 | +51.0% |
+    | Sales | $1,240.00 | $1,322.00 | -$82.00 | -6.2% |
+    | Loaves | 860 | 730 | +130 | +18.0% |
 
-    The previous window had no web conversions recorded, so web comparisons are not available.
+    The previous week had no wholesale orders recorded, so a wholesale comparison is not available.
     """,
-    new LayoutOptions { Question = "Compare the last 30 days against the previous 30 days." });
+    new LayoutOptions
+    {
+        Question = "Compare the last 7 days against the previous 7 days.",
+        Lexicon = bakery,
+    });
 ```
 
 Blocks: Headline / Salience → Table / Markdown → Callout (Warning) / Role
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Over the last 30 days (2 Mar to 31 Mar) against the 30 days before (31 Jan to 1 Mar), spend fell 6.2% while clicks rose 51.0%.</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Over the last 7 days (2 Mar to 8 Mar) against the 7 days before (23 Feb to 1 Mar), sales fell 6.2% while loaves rose 18.0%.</p>
 <table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
 <thead>
 <tr>
-<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Metric</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Last 30 days</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Previous 30 days</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Line</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Last 7 days</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Previous 7 days</th>
 <th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Change</th>
 <th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">% change</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Spend</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$645.00</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$687.60</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">-$42.60</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Sales</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$1,240.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$1,322.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">-$82.00</td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">-6.2%</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Clicks</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">120,000</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">79,470</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">+40,530</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">+51.0%</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Loaves</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">860</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">730</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">+130</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">+18.0%</td>
 </tr>
 </tbody>
 </table>
-<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">The previous window had no web conversions recorded, so web comparisons are not available.</div>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">The previous week had no wholesale orders recorded, so a wholesale comparison is not available.</div>
 </div>
 
-#### 15. Campaigns, with names the built-in lexicon does not know
+#### 15. Cakes, with names the loaf list does not know
 
-`Lexicon.Marketing.WithEntities` teaches three campaign names. Their `Kind` (`campaign`) becomes the column header. The question makes "Spring Sale led the month." the headline. The "by campaign" sentence is replaced by a spend table. The cost-per-click list becomes a second table. Ordinals become a list. A partial-data warning and a decision note close the layout. The markdown heading is kept, after the headline and the cards, which are always placed first.
+`WithEntities` adds three cakes. Their `Kind` (`cake`) becomes the column header. The question makes "Black Forest led the case." the headline, and the "by cake" sentence is replaced by a sales table. The cost list becomes a second table. Ordinals become a list. A partial-count warning and a decision note close the layout. The markdown heading is kept, after the headline and the cards, which are always placed first.
 
 ```csharp
-var lexicon = Lexicon.Marketing.WithEntities(new[]
+var cakes = bakery.WithEntities(new[]
 {
-    new LexiconEntity("Spring Sale", "campaign", new[] { "spring sale", "spring-sale-2026" }),
-    new LexiconEntity("Always On", "campaign", new[] { "always on", "always-on" }),
-    new LexiconEntity("Retargeting", "campaign", new[] { "retargeting" }),
+    new LexiconEntity("Black Forest", "cake", new[] { "black forest" }),
+    new LexiconEntity("Lemon Tart", "cake", new[] { "lemon tart" }),
+    new LexiconEntity("Carrot Cake", "cake", new[] { "carrot cake" }),
 });
 
 var doc = TextLayoutEngine.Format("""
-    ## Campaigns
+    ## Weekend cakes
 
-    Spring Sale led the month. By campaign: Spring Sale spent $310.00, Always On spent $240.00 and Retargeting spent $95.00.
+    Black Forest led the case. By cake: Black Forest took in $310.00, Lemon Tart took in $240.00 and Carrot Cake took in $95.00.
 
-    Costs per click:
+    Costs per cake:
 
-    - Cost per click: Spring Sale $0.0065 (middle)
-    - Cost per click: Always On $0.0141 (highest)
-    - Cost per click: Retargeting $0.0017 (lowest)
+    - Cost per cake: Black Forest $6.20 (middle)
+    - Cost per cake: Lemon Tart $4.10 (lowest)
+    - Cost per cake: Carrot Cake $7.50 (highest)
 
-    You spent $645.00 for 120,000 clicks and 12 web conversions. First, Spring Sale grew. Second, Always On held. Finally, Retargeting fell.
+    The case took in $645.00 for 86 cakes and 120 customers. First, Black Forest grew. Second, Lemon Tart held. Finally, Carrot Cake fell.
 
-    Today's data is partial. The conversion counts are tiny, so treat CPA with caution. Where to move budget is your team's decision.
+    Today's count is partial. The Saturday slices are tiny, so treat the ranking with caution. Where to move the Sunday bake is your team's decision.
     """,
     new LayoutOptions
     {
-        Question = "Which campaign led the month?",
-        Lexicon = lexicon,
+        Question = "Which cake led the case?",
+        Lexicon = cakes,
     });
 ```
 
 Blocks: Headline / Salience → KeyFigures / Figures → Heading / Markdown → Table / EntityPairs → Paragraph / Prose → Table / Template → Paragraph / Prose → Bullets / Enumeration → Callout (Warning) / Role → Callout (Info) / Role
 
 <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
-<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Spring Sale led the month.</p>
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Black Forest led the case.</p>
 <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
 <tr>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Sales</div>
 <div style="font-size:20px;font-weight:700;color:#111827">$645.00</div>
 </td>
 <td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
-<div style="font-size:20px;font-weight:700;color:#111827">120,000</div>
-</td>
-<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
-<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Web conversions</div>
-<div style="font-size:20px;font-weight:700;color:#111827">12</div>
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Customers</div>
+<div style="font-size:20px;font-weight:700;color:#111827">120</div>
 </td>
 </tr>
 </table>
-<h3 style="margin:16px 0 6px;font-size:16px;color:#111827">Campaigns</h3>
+<h3 style="margin:16px 0 6px;font-size:16px;color:#111827">Weekend cakes</h3>
 <table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
 <thead>
 <tr>
-<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Campaign</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Spend</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Cake</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Sales</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Spring Sale</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Black Forest</td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$310.00</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Always On</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Lemon Tart</td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$240.00</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Retargeting</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Carrot Cake</td>
 <td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$95.00</td>
 </tr>
 </tbody>
 </table>
-<p style="margin:0 0 12px">Costs per click:</p>
+<p style="margin:0 0 12px">Costs per cake:</p>
 <table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
 <thead>
 <tr>
-<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Campaign</th>
-<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Cost per click</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Cake</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Cost per cake</th>
 <th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Detail</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Spring Sale</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0065</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Black Forest</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$6.20</td>
 <td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(middle)</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Always On</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0141</td>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(highest)</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Lemon Tart</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$4.10</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(lowest)</td>
 </tr>
 <tr>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Retargeting</td>
-<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0017</td>
-<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(lowest)</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Carrot Cake</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$7.50</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(highest)</td>
 </tr>
 </tbody>
 </table>
-<p style="margin:0 0 12px">You spent $645.00 for 120,000 clicks and 12 web conversions.</p>
+<p style="margin:0 0 12px">The case took in $645.00 for 86 cakes and 120 customers.</p>
 <ul style="margin:0 0 12px;padding-left:20px">
-<li>First, Spring Sale grew.</li>
-<li>Second, Always On held.</li>
-<li>Finally, Retargeting fell.</li>
+<li>First, Black Forest grew.</li>
+<li>Second, Lemon Tart held.</li>
+<li>Finally, Carrot Cake fell.</li>
 </ul>
-<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Today&#39;s data is partial. The conversion counts are tiny, so treat CPA with caution.</div>
-<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#eef2ff;color:#3730a3">Where to move budget is your team&#39;s decision.</div>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Today&#39;s count is partial. The Saturday slices are tiny, so treat the ranking with caution.</div>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#eef2ff;color:#3730a3">Where to move the Sunday bake is your team&#39;s decision.</div>
 </div>
 
 ## The algorithms
