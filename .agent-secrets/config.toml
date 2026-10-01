@@ -1,0 +1,11 @@
+version = 1
+vault = "vault.vlt"
+
+[[locks]]
+id = "ssh-SHA256N2"
+type = "ssh"
+file = "locks/ssh-SHA256N2.enc"
+fingerprint = "SHA256:N2Qhzi2OWf6KeOxkDoGh1Q=="
+comment = "/home/shafqat/.ssh/id_rsa.pub"
+public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDeniTfE7W+O4TKAjKLVS4uXkeGKu9/35Pu3GWGGGtSjWoYNBo86w818QSTBnA4ttI7JnOBHRWrHEWidjnWJdxt2qpgZRLB1MiX8vvdDoYSqa5OJ/uVvXNGfVjc43080On6Y2FjY8w3hqRY0WPs+zQDdpgVlKzrUG8T9r6e819s9siVv41n5wvH3UMz2a4cd0XPQl8H9dR/xhv/FjSXOl4weo8vCQNo2QSiLu2vo2cOiGKRYj/eWap2jJarX+45S5AWjYx3t4GI1H0tfCt7PFJ35BPcTCcTMw3S9+XIqg2DjZrhMzA37owUOFHZBhmT5UUEMmBQ+Af8UVJdg+LFMcVx6gJ5R25e+bcHAKPJY0+NILQPG0/PY7TVkizq4RYZphDHS9zSz6NKuoEHFT984oTboCKqPfk+vvopcdKwNXLwaIicN21ktwRZjVsAXbVPOemLuWoS/QTFypZYjpBwdxeun3ODhlNCGUnk6VVz5cCoep6Drlvv0TmAIxgc+EmwZKlb/z+MdHTQasvpRI/RvIBeWr2B0RzVn9TckC9P8349ss/LImLlqXlrhV+cLy1GImNfAkbJAOxyM50zqaz0DydyNl5/dkAiy0QizvQf+Ox1GZhLdQ3leVoK9aL8SGfyEI+0mhqPOoh+6OlFkO+97tI5wH4zFVDdTqMfgnhR0inLYw== root@personal"
+created_at = "2026-10-01T19:36:57.166776156+00:00"
