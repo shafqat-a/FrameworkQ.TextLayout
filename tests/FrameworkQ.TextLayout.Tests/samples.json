@@ -1,0 +1,102 @@
+[
+ {
+  "id": "total",
+  "question": "What was total spend in the last 30 days?",
+  "text": "You spent $645.00 over the last 30 days (2 Mar to 31 Mar). That covered 120,000 clicks and 12 web conversions."
+ },
+ {
+  "id": "channels-table",
+  "question": "Compare Facebook, TikTok and Google Ads on spend and clicks.",
+  "text": "Over the last 30 days (2 Mar to 31 Mar), TikTok took the most spend and Google Ads the most clicks.\n\n| Channel | Spend | Clicks | Web conversions |\n|---|---|---|---|\n| TikTok | $310.00 | 48,000 | 5 |\n| Facebook | $240.00 | 17,000 | 0 |\n| Google Ads | $95.00 | 55,000 | 7 |\n| **Total** | **$645.00** | **120,000** | **12** |\n\nTikTok is almost half of all your spend ($310.00 of $645.00).\n\nCaveat: the web conversion counts are tiny (0–7), so any per-conversion reading rests on very little."
+ },
+ {
+  "id": "prose-comparison",
+  "question": "Which channel spent the most?",
+  "text": "TikTok spent the most at $310.00. By channel: TikTok spent $310.00, Facebook $240.00 and Google Ads $95.00. Note that today's data is partial and not included."
+ },
+ {
+  "id": "workings",
+  "question": "Which channel has the cheapest clicks?",
+  "text": "Google Ads has the cheapest clicks. Cost per click worked out at $0.0017 for Google Ads ($95.00 ÷ 55,000), $0.0065 for TikTok ($310.00 ÷ 48,000) and $0.0141 for Facebook ($240.00 ÷ 17,000)."
+ },
+ {
+  "id": "refusal",
+  "question": "If I had 20 percent more budget, where should it go?",
+  "text": "Where the extra $129.00 goes is your team's call, not mine. You spent $645.00 in the last 30 days, and Google Ads had 7 web conversions on $95.00 of spend. Two caveats before you weigh it: the conversion counts rest on just 7 and 5 conversions. And the budget settings came back empty, so I can't see how much each campaign could absorb."
+ },
+ {
+  "id": "buried",
+  "question": "Which campaign spent the most?",
+  "text": "Here is some background on how the account is set up. Campaigns run on three platforms with separate budgets. The Spring Sale campaign on TikTok spent the most, $310.00 of $645.00."
+ },
+ {
+  "id": "bullets",
+  "question": "What stands out this month?",
+  "text": "Three things stand out this month:\n\n- Google Ads produced the most web conversions (7) on the least spend.\n- Facebook's $240.00 brought no web conversions.\n- TikTok delivered 48,000 clicks at a low cost per click."
+ },
+ {
+  "id": "template-list",
+  "question": "Show cost per click by channel.",
+  "text": "Costs per click:\n\n- Cost per click: Google Ads $0.0017 (lowest)\n- Cost per click: TikTok $0.0065 (middle)\n- Cost per click: Facebook $0.0141 (highest)"
+ },
+ {
+  "id": "ordinals",
+  "question": "Summarise the month.",
+  "text": "Spend rose this month. First, TikTok grew to $310.00. Second, Facebook held at $240.00. Finally, Google Ads fell to $95.00."
+ },
+ {
+  "id": "semicolons",
+  "question": "What changed?",
+  "text": "Spend rose by $45.00 against the previous 30 days. Three things moved: TikTok grew; Facebook held; Google Ads fell."
+ },
+ {
+  "id": "week-over-week",
+  "question": "Has spend gone up or down week over week?",
+  "text": "Spend went up week over week: $151.20 in the last 7 days (25 Mar to 31 Mar) against $126.40 in the 7 days before, an increase of $24.80 (19.6%)."
+ },
+ {
+  "id": "comparison-period",
+  "question": "Compare the last 30 days against the previous 30 days.",
+  "text": "Over the last 30 days (2 Mar to 31 Mar) against the 30 days before (31 Jan to 1 Mar), spend fell 6.2% while clicks rose 51.0%.\n\n| Metric | Last 30 days | Previous 30 days | Change | % change |\n|---|---|---|---|---|\n| Spend | $645.00 | $687.60 | -$42.60 | -6.2% |\n| Clicks | 120,000 | 79,470 | +40,530 | +51.0% |\n\nNote: the previous window had no web conversions recorded, so web comparisons are not possible."
+ },
+ {
+  "id": "fraud",
+  "question": "How many scored click events were suspicious?",
+  "text": "In the last 30 days, 18,400 of 131,200 scored click events were suspicious, a suspicious rate of 14.0%. These are risk scores, not confirmed fraud."
+ },
+ {
+  "id": "no-data",
+  "question": "What is my total unique reach across all campaigns?",
+  "text": "I can't give a total unique reach: reach counts unique people and cannot be added across campaigns. The largest single campaign reached 380,000 people, which is only a lower bound."
+ },
+ {
+  "id": "duplicate",
+  "question": "How much did we spend?",
+  "text": "You spent $645.00 last month. TikTok led spend. You spent $645.00 last month."
+ },
+ {
+  "id": "long-narrative",
+  "question": "Write a monthly summary.",
+  "text": "TikTok spend rose to $310.00 this month. TikTok clicks reached 48,000 at a low cost. TikTok also drove 5 web conversions. TikTok remains the largest channel by spend. Fraud screening flagged 210 high-risk events. Fraud risk events were concentrated on bot traffic. Most fraud risk events came from one layer. Fraud screening covered every day of the window."
+ },
+ {
+  "id": "age-gender",
+  "question": "Which age band and gender performs best on cost per click?",
+  "text": "The 65+ female band has the lowest cost per click, $0.0049 (on 721 clicks), just ahead of 55-64 female at $0.0050.\n\n| Age band | Gender | Spend | Clicks | CPC |\n|---|---|---|---|---|\n| 65+ | Female | $3.52 | 721 | $0.0049 |\n| 55-64 | Female | $5.47 | 1,090 | $0.0050 |\n| 55-64 | Male | $15.14 | 3,012 | $0.0050 |"
+ },
+ {
+  "id": "markdown-heavy",
+  "question": "Give me the channel breakdown.",
+  "text": "## Channel breakdown\n\nTikTok led spend at **$310.00**.\n\n### Notes\n\nKeep in mind the figures exclude today, which is partial."
+ },
+ {
+  "id": "odd-characters",
+  "question": "Spend?",
+  "text": "You spent **$645.00** <b>last</b> month — that's [the total](https://example.com) for 3 channels; see `report`."
+ },
+ {
+  "id": "short-alert",
+  "question": "Alert",
+  "text": "CPC on Facebook rose 24% to $0.0141 in the last 7 days."
+ }
+]

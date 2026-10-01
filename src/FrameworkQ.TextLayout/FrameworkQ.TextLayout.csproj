@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>FrameworkQ.TextLayout</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <!-- Package -->
+    <PackageId>FrameworkQ.TextLayout</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Shafqat Ahmed</Authors>
+    <Description>Deterministic text layout without AI: turns answers, summaries and reports into a headline, key-figure cards, paragraphs, lists, tables and callouts, using classical NLP and IR algorithms (TextRank/LexRank, TextTiling, MMR, argumentative zoning, text-table alignment). Guarantees no sentence is lost and no figure is invented. Renders to JSON, HTML (app or email) and plain text.</Description>
+    <PackageTags>text-layout;nlp;formatting;summarization;textrank;lexrank;texttiling;markdown;tables;llm-output</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/shafqat-a/FrameworkQ.TextLayout</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/shafqat-a/FrameworkQ.TextLayout</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Markdig" Version="1.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <InternalsVisibleTo Include="FrameworkQ.TextLayout.Tests" />
+  </ItemGroup>
+
+</Project>

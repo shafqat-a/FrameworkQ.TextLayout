@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FrameworkQ.TextLayout/FrameworkQ.TextLayout.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FrameworkQ.TextLayout.Tests/FrameworkQ.TextLayout.Tests.csproj" />
+  </Folder>
+</Solution>
