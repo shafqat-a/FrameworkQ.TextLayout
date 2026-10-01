@@ -67,7 +67,7 @@ string plain = LayoutRenderers.PlainText(doc);             // SMS, logs, termina
 omitted. `null` or whitespace returns an empty document: `Blocks` is empty and `IsFallback` is
 false.
 
-Fifteen graded calls, each with the plain text that call produced, are in [Samples](#samples).
+Fifteen graded calls, each followed by the email HTML that call produced, are in [Samples](#samples).
 
 ### A worked example
 
@@ -94,6 +94,20 @@ TikTok spent the most, at $310.00 of $645.00.
 
 ! Note that today's data is partial and excluded.
 ```
+
+`LayoutRenderers.Html(doc, HtmlStyle.Email)` is the same layout as HTML. Pasted straight into
+this markdown file, a viewer renders it:
+
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">You spent $645.00 over the last 30 days for 120,000 clicks and 10 web conversions.</p>
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0"><tr>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top"><div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div><div style="font-size:20px;font-weight:700;color:#111827">$645.00</div></td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top"><div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div><div style="font-size:20px;font-weight:700;color:#111827">120,000</div></td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top"><div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Web conversions</div><div style="font-size:20px;font-weight:700;color:#111827">10</div></td>
+</tr></table>
+<p style="margin:0 0 12px">TikTok spent the most, at $310.00 of $645.00.</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Note that today&#39;s data is partial and excluded.</div>
+</div>
 
 The same document, block by block:
 
@@ -445,12 +459,15 @@ return LayoutRenderers.Json(doc);
 ## Samples
 
 Each sample below was run through `TextLayoutEngine.Format` before it was written down. None of
-them fell back. The block line is `Kind / Origin` in display order. The text block is
-`LayoutRenderers.PlainText` of that same document.
+them fell back. The block line is `Kind / Origin` in display order. Under it is
+`LayoutRenderers.Html(doc, HtmlStyle.Email)`, pasted as HTML so the markdown renders the layout:
+a headline, figure cards, paragraphs, lists, tables and callouts. `**bold**` in a table cell
+becomes `<strong>`.
 
-In the plain text, figure cards share one line separated by `·`. A warning callout starts with
-`! `, an info callout with `Note: `, and a bullet with `• `. `**bold**` is kept in the document
-and stripped in the plain text, which is why a `**Total**` row prints as `Total`.
+Markdown allows that raw HTML. GitHub's readme sanitizer removes `style` and `class`, so on
+github.com the colours and card borders are dropped and the same markup shows as paragraphs,
+lists and tables. A preview that keeps inline styles shows the email colours, including the amber
+warning.
 
 ### Simple
 
@@ -466,9 +483,9 @@ var doc = TextLayoutEngine.Format("You spent $645.00 over the last 30 days.");
 
 Blocks: Headline / Salience
 
-```text
-You spent $645.00 over the last 30 days.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">You spent $645.00 over the last 30 days.</p>
+</div>
 
 #### 2. Totals become figure cards
 
@@ -481,11 +498,25 @@ var doc = TextLayoutEngine.Format(
 
 Blocks: Headline / Salience → KeyFigures / Figures
 
-```text
-You spent $645.00 over the last 30 days for 120,000 clicks and 10 web conversions.
-
-Spend: $645.00  ·  Clicks: 120,000  ·  Web conversions: 10
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">You spent $645.00 over the last 30 days for 120,000 clicks and 10 web conversions.</p>
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
+<tr>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
+<div style="font-size:20px;font-weight:700;color:#111827">$645.00</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
+<div style="font-size:20px;font-weight:700;color:#111827">120,000</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Web conversions</div>
+<div style="font-size:20px;font-weight:700;color:#111827">10</div>
+</td>
+</tr>
+</table>
+</div>
 
 #### 3. A markdown list stays a list
 
@@ -503,13 +534,14 @@ var doc = TextLayoutEngine.Format("""
 
 Blocks: Headline / Salience → Bullets / Markdown
 
-```text
-Three things stand out this month:
-
-• Google Ads produced the most web conversions on the least spend.
-• Facebook's spend brought no web conversions.
-• TikTok delivered the most clicks at a low cost per click.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Three things stand out this month:</p>
+<ul style="margin:0 0 12px;padding-left:20px">
+<li>Google Ads produced the most web conversions on the least spend.</li>
+<li>Facebook&#39;s spend brought no web conversions.</li>
+<li>TikTok delivered the most clicks at a low cost per click.</li>
+</ul>
+</div>
 
 #### 4. "First, … Second, …" becomes a list
 
@@ -520,13 +552,14 @@ var doc = TextLayoutEngine.Format(
 
 Blocks: Headline / Salience → Bullets / Enumeration
 
-```text
-Spend rose this month.
-
-• First, TikTok grew.
-• Second, Facebook held.
-• Finally, Google Ads fell.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Spend rose this month.</p>
+<ul style="margin:0 0 12px;padding-left:20px">
+<li>First, TikTok grew.</li>
+<li>Second, Facebook held.</li>
+<li>Finally, Google Ads fell.</li>
+</ul>
+</div>
 
 #### 5. A caveat becomes a warning
 
@@ -539,11 +572,10 @@ var doc = TextLayoutEngine.Format(
 
 Blocks: Headline / Salience → Callout (Warning) / Role
 
-```text
-You spent $645.00 over the last 30 days.
-
-! Note that today's data is partial and excluded.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">You spent $645.00 over the last 30 days.</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Note that today&#39;s data is partial and excluded.</div>
+</div>
 
 ### Moderate
 
@@ -562,11 +594,10 @@ var doc = TextLayoutEngine.Format(
 
 Blocks: Headline / Salience → Paragraph / Prose
 
-```text
-TikTok spent the most in the last 30 days, at $310.00 of $645.00.
-
-Here is some background on how the account is set up. Campaigns run on three platforms.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">TikTok spent the most in the last 30 days, at $310.00 of $645.00.</p>
+<p style="margin:0 0 12px">Here is some background on how the account is set up. Campaigns run on three platforms.</p>
+</div>
 
 #### 7. A comparison written as prose becomes a table
 
@@ -579,14 +610,31 @@ var doc = TextLayoutEngine.Format(
 
 Blocks: Headline / Salience → Table / EntityPairs
 
-```text
-Spend was led by TikTok.
-
-Channel     Spend
-TikTok      $310.00
-Facebook    $240.00
-Google Ads  $95.00
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Spend was led by TikTok.</p>
+<table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
+<thead>
+<tr>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Spend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$310.00</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$240.00</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Google Ads</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$95.00</td>
+</tr>
+</tbody>
+</table>
+</div>
 
 #### 8. Workings stay in a detail column
 
@@ -600,14 +648,35 @@ var doc = TextLayoutEngine.Format(
 
 Blocks: Headline / Salience → Table / EntityPairs
 
-```text
-CPC differs a lot by channel.
-
-Channel     CPC      Detail
-Google Ads  $0.0015  ($95.00 ÷ 55,000)
-TikTok      $0.0048  ($310.00 ÷ 48,000)
-Facebook    $0.0086  ($240.00 ÷ 17,000)
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">CPC differs a lot by channel.</p>
+<table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
+<thead>
+<tr>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">CPC</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Google Ads</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0015</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">($95.00 &#247; 55,000)</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0048</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">($310.00 &#247; 48,000)</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0086</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">($240.00 &#247; 17,000)</td>
+</tr>
+</tbody>
+</table>
+</div>
 
 #### 9. Repeated list items become one table
 
@@ -625,14 +694,35 @@ var doc = TextLayoutEngine.Format("""
 
 Blocks: Headline / Salience → Table / Template
 
-```text
-Costs per click:
-
-Channel     Cost per click  Detail
-Google Ads  $0.0015         (lowest)
-TikTok      $0.0048         (middle)
-Facebook    $0.0086         (highest)
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Costs per click:</p>
+<table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
+<thead>
+<tr>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Cost per click</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Google Ads</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0015</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(lowest)</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0048</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(middle)</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0086</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(highest)</td>
+</tr>
+</tbody>
+</table>
+</div>
 
 #### 10. A markdown table is kept, and its total row becomes the cards
 
@@ -650,16 +740,53 @@ var doc = TextLayoutEngine.Format("""
 
 Blocks: Headline / Salience → KeyFigures / Figures → Table / Markdown
 
-```text
-Spend by channel:
-
-Spend: $550.00  ·  Clicks: 65,000
-
-Channel   Spend    Clicks
-TikTok    $310.00  48,000
-Facebook  $240.00  17,000
-Total     $550.00  65,000
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Spend by channel:</p>
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
+<tr>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
+<div style="font-size:20px;font-weight:700;color:#111827">$550.00</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
+<div style="font-size:20px;font-weight:700;color:#111827">65,000</div>
+</td>
+</tr>
+</table>
+<table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
+<thead>
+<tr>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Spend</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Clicks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$310.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">48,000</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$240.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">17,000</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">
+<strong>Total</strong>
+</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">
+<strong>$550.00</strong>
+</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">
+<strong>65,000</strong>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 
 ### Complex
 
@@ -689,21 +816,71 @@ var doc = TextLayoutEngine.Format("""
 
 Blocks: Headline / Salience → KeyFigures / Figures → Table / Markdown → Paragraph / Prose → Callout (Warning) / Role
 
-```text
-Over the last 30 days (2 Mar to 31 Mar), TikTok took the most spend and Google Ads the most clicks.
-
-Spend: $645.00  ·  Clicks: 120,000  ·  Web conversions: 12
-
-Channel     Spend    Clicks   Web conversions
-TikTok      $310.00  48,000   5
-Facebook    $240.00  17,000   0
-Google Ads  $95.00   55,000   7
-Total       $645.00  120,000  12
-
-TikTok is almost half of all your spend ($310.00 of $645.00).
-
-! The web conversion counts are tiny (0–7), so any per-conversion reading rests on very little.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Over the last 30 days (2 Mar to 31 Mar), TikTok took the most spend and Google Ads the most clicks.</p>
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
+<tr>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
+<div style="font-size:20px;font-weight:700;color:#111827">$645.00</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
+<div style="font-size:20px;font-weight:700;color:#111827">120,000</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Web conversions</div>
+<div style="font-size:20px;font-weight:700;color:#111827">12</div>
+</td>
+</tr>
+</table>
+<table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
+<thead>
+<tr>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Channel</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Spend</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Clicks</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Web conversions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">TikTok</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$310.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">48,000</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">5</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Facebook</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$240.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">17,000</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">0</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Google Ads</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$95.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">55,000</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">7</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">
+<strong>Total</strong>
+</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">
+<strong>$645.00</strong>
+</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">
+<strong>120,000</strong>
+</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">
+<strong>12</strong>
+</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 12px">TikTok is almost half of all your spend ($310.00 of $645.00).</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">The web conversion counts are tiny (0–7), so any per-conversion reading rests on very little.</div>
+</div>
 
 #### 12. A long summary, split by topic
 
@@ -721,15 +898,12 @@ var doc = TextLayoutEngine.Format(
 
 Blocks: Headline / Salience → Paragraph / Prose → Paragraph / Prose → Callout (Warning) / Role
 
-```text
-TikTok spend rose to $310.00 this month.
-
-TikTok clicks reached 48,000 at a low cost. TikTok also drove 5 web conversions. TikTok remains the largest channel by spend.
-
-Fraud screening flagged 210 high-risk events. Fraud risk events were concentrated on bot traffic. Most fraud risk events came from one layer. Fraud screening covered every day of the window.
-
-! These are risk scores, not confirmed fraud.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">TikTok spend rose to $310.00 this month.</p>
+<p style="margin:0 0 12px">TikTok clicks reached 48,000 at a low cost. TikTok also drove 5 web conversions. TikTok remains the largest channel by spend.</p>
+<p style="margin:0 0 12px">Fraud screening flagged 210 high-risk events. Fraud risk events were concentrated on bot traffic. Most fraud risk events came from one layer. Fraud screening covered every day of the window.</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">These are risk scores, not confirmed fraud.</div>
+</div>
 
 #### 13. An answer that declines to decide
 
@@ -747,17 +921,24 @@ var doc = TextLayoutEngine.Format(
 
 Blocks: Headline / Salience → KeyFigures / Figures → Paragraph / Prose → Callout (Warning) / Role → Callout (Info) / Role
 
-```text
-Where the extra $129.00 goes is your team's call, not mine.
-
-Spend: $645.00  ·  Clicks: 120,000
-
-You spent $645.00 in the last 30 days for 120,000 clicks, and Google Ads had 7 web conversions on $95.00 of spend.
-
-! Note that the conversion counts are tiny, so treat CPA with caution. The budget settings came back empty, so I can't see how much each campaign could absorb.
-
-Note: Where to move the extra budget is your team's decision.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Where the extra $129.00 goes is your team&#39;s call, not mine.</p>
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
+<tr>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
+<div style="font-size:20px;font-weight:700;color:#111827">$645.00</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
+<div style="font-size:20px;font-weight:700;color:#111827">120,000</div>
+</td>
+</tr>
+</table>
+<p style="margin:0 0 12px">You spent $645.00 in the last 30 days for 120,000 clicks, and Google Ads had 7 web conversions on $95.00 of spend.</p>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Note that the conversion counts are tiny, so treat CPA with caution. The budget settings came back empty, so I can&#39;t see how much each campaign could absorb.</div>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#eef2ff;color:#3730a3">Where to move the extra budget is your team&#39;s decision.</div>
+</div>
 
 #### 14. Two periods, in a table the writer already made
 
@@ -779,15 +960,37 @@ var doc = TextLayoutEngine.Format("""
 
 Blocks: Headline / Salience → Table / Markdown → Callout (Warning) / Role
 
-```text
-Over the last 30 days (2 Mar to 31 Mar) against the 30 days before (31 Jan to 1 Mar), spend fell 6.2% while clicks rose 51.0%.
-
-Metric  Last 30 days  Previous 30 days  Change   % change
-Spend   $645.00       $687.60           -$42.60  -6.2%
-Clicks  120,000       79,470            +40,530  +51.0%
-
-! The previous window had no web conversions recorded, so web comparisons are not available.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Over the last 30 days (2 Mar to 31 Mar) against the 30 days before (31 Jan to 1 Mar), spend fell 6.2% while clicks rose 51.0%.</p>
+<table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
+<thead>
+<tr>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Metric</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Last 30 days</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Previous 30 days</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Change</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">% change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Spend</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$645.00</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$687.60</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">-$42.60</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">-6.2%</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Clicks</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">120,000</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">79,470</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">+40,530</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">+51.0%</td>
+</tr>
+</tbody>
+</table>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">The previous window had no web conversions recorded, so web comparisons are not available.</div>
+</div>
 
 #### 15. Campaigns, with names the built-in lexicon does not know
 
@@ -825,35 +1028,83 @@ var doc = TextLayoutEngine.Format("""
 
 Blocks: Headline / Salience → KeyFigures / Figures → Heading / Markdown → Table / EntityPairs → Paragraph / Prose → Table / Template → Paragraph / Prose → Bullets / Enumeration → Callout (Warning) / Role → Callout (Info) / Role
 
-```text
-Spring Sale led the month.
-
-Spend: $645.00  ·  Clicks: 120,000  ·  Web conversions: 12
-
-Campaigns
-
-Campaign     Spend
-Spring Sale  $310.00
-Always On    $240.00
-Retargeting  $95.00
-
-Costs per click:
-
-Campaign     Cost per click  Detail
-Spring Sale  $0.0065         (middle)
-Always On    $0.0141         (highest)
-Retargeting  $0.0017         (lowest)
-
-You spent $645.00 for 120,000 clicks and 12 web conversions.
-
-• First, Spring Sale grew.
-• Second, Always On held.
-• Finally, Retargeting fell.
-
-! Today's data is partial. The conversion counts are tiny, so treat CPA with caution.
-
-Note: Where to move budget is your team's decision.
-```
+<div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937;line-height:1.55;font-size:15px">
+<p style="margin:0 0 12px;font-size:18px;font-weight:600;color:#111827">Spring Sale led the month.</p>
+<table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:separate;border-spacing:8px 0">
+<tr>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Spend</div>
+<div style="font-size:20px;font-weight:700;color:#111827">$645.00</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Clicks</div>
+<div style="font-size:20px;font-weight:700;color:#111827">120,000</div>
+</td>
+<td style="border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;vertical-align:top">
+<div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#6b7280">Web conversions</div>
+<div style="font-size:20px;font-weight:700;color:#111827">12</div>
+</td>
+</tr>
+</table>
+<h3 style="margin:16px 0 6px;font-size:16px;color:#111827">Campaigns</h3>
+<table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
+<thead>
+<tr>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Campaign</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Spend</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Spring Sale</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$310.00</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Always On</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$240.00</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Retargeting</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$95.00</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 12px">Costs per click:</p>
+<table cellspacing="0" cellpadding="0" style="margin:0 0 12px;border-collapse:collapse;font-size:14px">
+<thead>
+<tr>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Campaign</th>
+<th style="text-align:right;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Cost per click</th>
+<th style="text-align:left;padding:6px 10px;background:#f3f4f6;border-bottom:1px solid #e5e7eb">Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Spring Sale</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0065</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(middle)</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Always On</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0141</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(highest)</td>
+</tr>
+<tr>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">Retargeting</td>
+<td style="text-align:right;padding:6px 10px;border-bottom:1px solid #e5e7eb">$0.0017</td>
+<td style="text-align:left;padding:6px 10px;border-bottom:1px solid #e5e7eb">(lowest)</td>
+</tr>
+</tbody>
+</table>
+<p style="margin:0 0 12px">You spent $645.00 for 120,000 clicks and 12 web conversions.</p>
+<ul style="margin:0 0 12px;padding-left:20px">
+<li>First, Spring Sale grew.</li>
+<li>Second, Always On held.</li>
+<li>Finally, Retargeting fell.</li>
+</ul>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#fef3c7;color:#92400e">Today&#39;s data is partial. The conversion counts are tiny, so treat CPA with caution.</div>
+<div style="margin:0 0 12px;padding:9px 12px;border-radius:6px;background:#eef2ff;color:#3730a3">Where to move budget is your team&#39;s decision.</div>
+</div>
 
 ## The algorithms
 
