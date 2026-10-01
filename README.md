@@ -1112,15 +1112,15 @@ Each step is a classical, unsupervised NLP or IR method:
 
 | Step | Method |
 |---|---|
-| Structure the writer gave | CommonMark parsing (Markdig) |
-| Sentences | Punkt-style boundary rules (Kiss and Strunk, 2006) |
-| Figures | Quantity recognition: value, unit and comparator (Roy, Vieira and Roth, 2015), with exact spans |
-| Entities and metrics | Aho–Corasick gazetteer matching, longest match first |
-| Sentence roles | Cue phrases, as in argumentative zoning (Teufel), and explicit discourse connectives (Penn Discourse Treebank) |
-| The answer | Lead bias, question overlap, LexRank (Erkan and Radev, 2004) and figure density |
-| Tables | Text–table quantity alignment (after BriQ, Ibrahim et al., 2019), entity–figure pairing, template induction |
-| Paragraphs | TextTiling (Hearst, 1997) |
-| Repetition and card diversity | Maximal Marginal Relevance (Carbonell and Goldstein, 1998) |
+| Structure the writer gave | CommonMark parsing ([Markdig](https://github.com/xoofx/markdig)) |
+| Sentences | Punkt-style boundary rules ([Kiss and Strunk, 2006](https://aclanthology.org/J06-4003/)) |
+| Figures | Quantity recognition: value, unit and comparator ([Roy, Vieira and Roth, 2015](https://aclanthology.org/Q15-1001/)), with exact spans |
+| Entities and metrics | [Aho–Corasick](https://cr.yp.to/bib/1975/aho.pdf) gazetteer matching, longest match first |
+| Sentence roles | Cue phrases, as in argumentative zoning ([Teufel and Moens, 2002](https://aclanthology.org/J02-4002/)), and explicit discourse connectives ([Penn Discourse Treebank](https://aclanthology.org/L08-1093/)) |
+| The answer | Lead bias ([Zhu et al., 2021](https://arxiv.org/abs/1912.11602)), question overlap, LexRank ([Erkan and Radev, 2004](https://arxiv.org/abs/1109.2128)) and figure density |
+| Tables | Text–table quantity alignment (after BriQ, [Ibrahim et al., 2019](https://www.khoury.northeastern.edu/~mirek/papers/2019-ICDE-BriQ.pdf)), entity–figure pairing, template induction |
+| Paragraphs | TextTiling ([Hearst, 1997](https://aclanthology.org/J97-1003/)) |
+| Repetition and card diversity | Maximal Marginal Relevance ([Carbonell and Goldstein, 1998](https://www.cs.cmu.edu/~jgc/publication/The_Use_MMR_Diversity_Based_LTMIR_1998.pdf)) |
 
 [docs/ALGORITHMS.md](docs/ALGORITHMS.md) covers each step and its references.
 
