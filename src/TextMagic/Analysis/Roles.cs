@@ -1,6 +1,6 @@
-using FrameworkQ.TextLayout.Text;
+using TextMagic.Text;
 
-namespace FrameworkQ.TextLayout.Analysis;
+namespace TextMagic.Analysis;
 
 /// <summary>
 /// Gives each sentence a rhetorical role from surface cues, in the manner of argumentative zoning

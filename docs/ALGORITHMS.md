@@ -1,6 +1,6 @@
 # Algorithms
 
-FrameworkQ.TextLayout chains classical, unsupervised methods. No model is trained or called;
+TextMagic chains classical, unsupervised methods. No model is trained or called;
 every step is a rule or a closed-form computation, so the same input always gives the same layout.
 
 ## What each step is for

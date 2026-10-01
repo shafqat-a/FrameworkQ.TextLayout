@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/FrameworkQ.TextLayout/FrameworkQ.TextLayout.csproj" />
+    <ProjectReference Include="../../src/TextMagic/TextMagic.csproj" />
     <None Include="samples.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

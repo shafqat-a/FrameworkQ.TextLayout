@@ -1,4 +1,4 @@
-namespace FrameworkQ.TextLayout;
+namespace TextMagic;
 
 /// <summary>A thing the text talks about: a channel, campaign, segment. Matched by any alias, shown by name.</summary>
 public sealed record LexiconEntity(string Name, string Kind, IReadOnlyList<string> Aliases);

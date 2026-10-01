@@ -1,4 +1,4 @@
-namespace FrameworkQ.TextLayout.Text;
+namespace TextMagic.Text;
 
 /// <summary>
 /// Splits a paragraph into sentences. Rules in the spirit of Punkt (Kiss and Strunk, 2006): a

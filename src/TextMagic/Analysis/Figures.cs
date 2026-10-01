@@ -1,6 +1,6 @@
-using FrameworkQ.TextLayout.Text;
+using TextMagic.Text;
 
-namespace FrameworkQ.TextLayout.Analysis;
+namespace TextMagic.Analysis;
 
 /// <summary>
 /// Chooses the 2–4 figures worth a card. Each candidate is a measure with a metric word next to it

@@ -1,15 +1,15 @@
 using System.Diagnostics;
 using System.Text.Json;
 using FluentAssertions;
-using FrameworkQ.TextLayout;
-using FrameworkQ.TextLayout.Analysis;
-using FrameworkQ.TextLayout.Text;
+using TextMagic;
+using TextMagic.Analysis;
+using TextMagic.Text;
 using Xunit;
 
-namespace FrameworkQ.TextLayout.Tests;
+namespace TextMagic.Tests;
 
 /// <summary>
-/// FrameworkQ.TextLayout: each algorithm on its own, the repairs it makes to disorganised text, and
+/// TextMagic: each algorithm on its own, the repairs it makes to disorganised text, and
 /// the two guarantees on a sample set and on randomly generated text.
 /// </summary>
 public sealed class TextLayoutTests

@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TextMagic/TextMagic.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TextMagic.Tests/TextMagic.Tests.csproj" />
+  </Folder>
+</Solution>

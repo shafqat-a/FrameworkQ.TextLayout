@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace FrameworkQ.TextLayout;
+namespace TextMagic;
 
 public enum HtmlStyle
 {

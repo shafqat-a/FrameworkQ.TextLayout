@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace FrameworkQ.TextLayout;
+namespace TextMagic;
 
 /// <summary>The structured layout of one piece of text. Immutable; render it with <see cref="LayoutRenderers"/>.</summary>
 public sealed record LayoutDocument

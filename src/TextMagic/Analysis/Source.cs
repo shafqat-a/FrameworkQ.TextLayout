@@ -2,9 +2,9 @@ using System.Text.RegularExpressions;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Syntax;
-using FrameworkQ.TextLayout.Text;
+using TextMagic.Text;
 
-namespace FrameworkQ.TextLayout.Analysis;
+namespace TextMagic.Analysis;
 
 internal enum Role { Answer, Figure, Comparison, Context, Caveat, Decision, Definition, Other }
 

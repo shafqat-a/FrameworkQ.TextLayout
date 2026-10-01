@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.1 — 2026-10-02
+
+Renamed the project from FrameworkQ.TextLayout to TextMagic.
+
+- Repository, package id, assembly and namespace are `TextMagic`.
+- No layout behaviour changed.
+
 ## 1.0.0 — 2026-10-01
 
 First release.

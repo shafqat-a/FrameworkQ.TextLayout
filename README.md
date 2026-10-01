@@ -1,6 +1,6 @@
-# FrameworkQ.TextLayout
+# TextMagic
 
-**Lay text out without AI.** FrameworkQ.TextLayout turns an answer, a summary or a report paragraph,
+**Lay text out without AI.** TextMagic turns an answer, a summary or a report paragraph,
 whether a person wrote it or an LLM generated it, into a structured layout:
 
 - a **headline**;
@@ -27,24 +27,24 @@ never throws.
 From NuGet:
 
 ```bash
-dotnet add package FrameworkQ.TextLayout
+dotnet add package TextMagic
 ```
 
 From a pack of this repository, into another project:
 
 ```bash
-dotnet pack src/FrameworkQ.TextLayout -c Release -o ./artifacts
-dotnet add package FrameworkQ.TextLayout --source ./artifacts
+dotnet pack src/TextMagic -c Release -o ./artifacts
+dotnet add package TextMagic --source ./artifacts
 ```
 
 Or reference the project directly:
 
 ```bash
-dotnet add reference path/to/FrameworkQ.TextLayout/src/FrameworkQ.TextLayout/FrameworkQ.TextLayout.csproj
+dotnet add reference path/to/TextMagic/src/TextMagic/TextMagic.csproj
 ```
 
 ```csharp
-using FrameworkQ.TextLayout;
+using TextMagic;
 ```
 
 ## Quick start
@@ -1183,7 +1183,7 @@ Each step is a classical, unsupervised NLP or IR method:
 
 ```bash
 dotnet test
-dotnet pack -c Release src/FrameworkQ.TextLayout -o artifacts
+dotnet pack -c Release src/TextMagic -o artifacts
 ```
 
 The tests cover each component, each repair on hand-written disorganised texts, the guarantees on

@@ -1,9 +1,9 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using FrameworkQ.TextLayout.Text;
+using TextMagic.Text;
 
-namespace FrameworkQ.TextLayout.Analysis;
+namespace TextMagic.Analysis;
 
 /// <summary>A table the engine built, and the sentences or list items it stands in for.</summary>
 internal sealed record InducedTable(

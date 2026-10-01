@@ -1,7 +1,7 @@
-using FrameworkQ.TextLayout.Analysis;
-using FrameworkQ.TextLayout.Text;
+using TextMagic.Analysis;
+using TextMagic.Text;
 
-namespace FrameworkQ.TextLayout;
+namespace TextMagic;
 
 /// <summary>
 /// Lays text out without AI. The pipeline (docs/ALGORITHMS.md):

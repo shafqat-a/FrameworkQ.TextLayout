@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace FrameworkQ.TextLayout.Text;
+namespace TextMagic.Text;
 
 public enum QuantityUnit { Number, Currency, Percent, PercentagePoints, Multiplier, Date, Year }
 

@@ -1,4 +1,4 @@
-namespace FrameworkQ.TextLayout.Text;
+namespace TextMagic.Text;
 
 /// <summary>A dictionary phrase found in text.</summary>
 internal sealed record PhraseHit<T>(int Start, int Length, T Value)
