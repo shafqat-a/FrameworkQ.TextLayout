@@ -12,6 +12,11 @@ whether a person wrote it or an LLM generated it, into a structured layout:
 It is deterministic, takes a couple of milliseconds, and its only dependency is
 [Markdig](https://github.com/xoofx/markdig). It targets **.NET 8** and **.NET 10**.
 
+Try it in the browser: [shafqat-a.github.io/TextMagic](https://shafqat-a.github.io/TextMagic/).
+Paste text, and any rows the text was written from, and the page returns the HTML.
+Nothing is uploaded. The page is [`src/TextMagic.Pages`](src/TextMagic.Pages), published by
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml).
+
 Two guarantees are checked on every call:
 
 1. **No sentence is lost.** Every sentence of the input appears in the layout, either as text or

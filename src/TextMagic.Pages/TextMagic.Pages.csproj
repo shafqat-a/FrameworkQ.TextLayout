@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- TextMagic.Json and Markdig both reflect. Rooting them keeps a trimmed publish faithful. -->
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TextMagic\TextMagic.csproj" />
+    <TrimmerRootAssembly Include="TextMagic" />
+    <TrimmerRootAssembly Include="Markdig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.11" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Dev server keeps base "/", so localhost works. The published page is a project site. -->
+  <Target Name="UseProjectSiteBaseHref" AfterTargets="Publish">
+    <Exec Command="sed -i 's#&lt;base href=&quot;/&quot; /&gt;#&lt;base href=&quot;/TextMagic/&quot; /&gt;#' &quot;$(PublishDir)wwwroot/index.html&quot;" />
+    <Delete Files="$(PublishDir)wwwroot/index.html.gz;$(PublishDir)wwwroot/index.html.br" />
+  </Target>
+
+</Project>

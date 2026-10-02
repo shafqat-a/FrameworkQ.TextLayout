@@ -1,0 +1,283 @@
+@inject IJSRuntime JS
+@implements IDisposable
+
+<PageTitle>TextMagic — lay text out</PageTitle>
+
+<header class="top">
+    <div>
+        <p class="mark">TextMagic</p>
+        <p class="lede">Paste an answer, a summary, or a report. This page returns the HTML. The engine runs here; nothing is uploaded.</p>
+    </div>
+    <nav class="links">
+        <a href="https://github.com/shafqat-a/TextMagic">GitHub</a>
+        <a href="https://www.nuget.org/packages/TextMagic">NuGet</a>
+    </nav>
+</header>
+
+<div class="grid">
+    <section class="card" aria-label="Input">
+        <div class="chips" role="group" aria-label="Samples">
+            @foreach (var sample in Samples.All)
+            {
+                <button type="button" class="chip @(Active(sample) ? "on" : "")" @onclick="() => Apply(sample)">@sample.Name</button>
+            }
+        </div>
+
+        <label for="text">Text</label>
+        <textarea id="text" class="prose" rows="10" @bind="Text" @bind:event="oninput" @bind:after="Schedule" spellcheck="true"></textarea>
+
+        <label for="question">Question <span class="hint">optional, sharpens the headline</span></label>
+        <input id="question" type="text" @bind="Question" @bind:event="oninput" @bind:after="Schedule" />
+
+        <div class="fields">
+            <div>
+                <label for="profile">Profile</label>
+                <select id="profile" @bind="ProfileName" @bind:after="Run">
+                    <option>Answer</option>
+                    <option>Insight</option>
+                    <option>Alert</option>
+                </select>
+            </div>
+            <div>
+                <label for="lexicon">Lexicon</label>
+                <select id="lexicon" @bind="LexiconName" @bind:after="Run">
+                    <option>Marketing</option>
+                    <option>General</option>
+                    <option>Bakery</option>
+                    <option>Cakes</option>
+                </select>
+            </div>
+            <div>
+                <label for="style">Style</label>
+                <select id="style" @bind="StyleName" @bind:after="Run">
+                    <option value="Classes">App classes</option>
+                    <option value="Email">Email, inline</option>
+                </select>
+            </div>
+        </div>
+
+        <label for="data">Source rows <span class="hint">optional JSON the text was written from</span></label>
+        <textarea id="data" class="code" rows="6" placeholder='[ { "columns": ["PlatformKey", "TotalSpend_USD"], "rows": [["tiktok", 310.00], ["facebook", 240.00]] } ]' @bind="DataJson" @bind:event="oninput" @bind:after="Schedule" spellcheck="false"></textarea>
+        @if (DataError is not null)
+        {
+            <p id="data-error" class="error" role="alert">@DataError The layout used the text only.</p>
+        }
+
+        <div class="fields narrow">
+            <div>
+                <label for="max-figures">Max figure cards</label>
+                <input id="max-figures" type="number" min="1" max="8" @bind="MaxFiguresText" @bind:event="oninput" @bind:after="Schedule" />
+            </div>
+            <div>
+                <label for="min-rows">Min table rows</label>
+                <input id="min-rows" type="number" min="2" max="12" @bind="MinRowsText" @bind:event="oninput" @bind:after="Schedule" />
+            </div>
+        </div>
+    </section>
+
+    <section class="card out" aria-label="Output">
+        <div class="status-row">
+            <p id="status" class="status" role="status">@Status</p>
+            <div class="tabs" role="group" aria-label="Output format">
+                <button type="button" class="@(Tab == "html" ? "on" : "")" aria-pressed="@(Tab == "html")" @onclick='() => Tab = "html"'>HTML</button>
+                <button type="button" class="@(Tab == "json" ? "on" : "")" aria-pressed="@(Tab == "json")" @onclick='() => Tab = "json"'>JSON</button>
+                <button type="button" class="@(Tab == "plain" ? "on" : "")" aria-pressed="@(Tab == "plain")" @onclick='() => Tab = "plain"'>Plain text</button>
+            </div>
+        </div>
+
+        @if (IsFallback)
+        {
+            <p class="banner">A check did not pass, so these are the text's own paragraphs.</p>
+        }
+
+        <h2>Preview</h2>
+        <div id="preview" class="preview">
+            @if (BlockCount == 0)
+            {
+                <p class="empty">Nothing to lay out yet.</p>
+            }
+            else
+            {
+                @((MarkupString)Html)
+            }
+        </div>
+
+        <div class="source-bar">
+            <h2 id="source-label">@SourceLabel</h2>
+            <button type="button" class="copy" @onclick="Copy">@(Copied ? "Copied" : "Copy")</button>
+        </div>
+        <pre id="source" aria-labelledby="source-label">@Source</pre>
+        <p class="call">@Call</p>
+
+        @if (Diagnostics.Count > 0)
+        {
+            <details class="diag">
+                <summary>Diagnostics</summary>
+                <ul>
+                    @foreach (var line in Diagnostics)
+                    {
+                        <li>@line</li>
+                    }
+                </ul>
+            </details>
+        }
+    </section>
+</div>
+
+@code {
+    private string Text = "";
+    private string Question = "";
+    private string ProfileName = "Answer";
+    private string LexiconName = "Marketing";
+    private string StyleName = "Classes";
+    private string DataJson = "";
+    private string MaxFiguresText = "4";
+    private string MinRowsText = "3";
+    private string Tab = "html";
+
+    private string Html = "";
+    private string Json = "";
+    private string Plain = "";
+    private string Status = "";
+    private string Call = "";
+    private string? DataError;
+    private bool IsFallback;
+    private int BlockCount;
+    private IReadOnlyList<string> Diagnostics = [];
+    private bool Copied;
+    private int _copyGen;
+    private CancellationTokenSource? _pending;
+
+    private string Source => Tab switch
+    {
+        "json" => Json,
+        "plain" => Plain,
+        _ => Html,
+    };
+
+    private string SourceLabel => Tab switch
+    {
+        "json" => "JSON",
+        "plain" => "Plain text",
+        _ => StyleName == "Email" ? "HTML for email" : "HTML",
+    };
+
+    protected override void OnInitialized() => Apply(Samples.All[0]);
+
+    private bool Active(Sample sample) =>
+        Text == sample.Text
+        && Question == (sample.Question ?? "")
+        && ProfileName == sample.Profile
+        && LexiconName == sample.Lexicon
+        && DataJson == (sample.DataJson ?? "");
+
+    private void Apply(Sample sample)
+    {
+        Text = sample.Text;
+        Question = sample.Question ?? "";
+        ProfileName = sample.Profile;
+        LexiconName = sample.Lexicon;
+        DataJson = sample.DataJson ?? "";
+        Run();
+    }
+
+    private async Task Schedule()
+    {
+        _pending?.Cancel();
+        var cts = new CancellationTokenSource();
+        _pending = cts;
+        try
+        {
+            await Task.Delay(60, cts.Token);
+            Run();
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    private void Run()
+    {
+        IReadOnlyList<DataTable> data;
+        try
+        {
+            data = Samples.ParseData(DataJson);
+            DataError = null;
+        }
+        catch (ArgumentException ex)
+        {
+            data = [];
+            DataError = ex.Message;
+        }
+
+        var options = new LayoutOptions
+        {
+            Question = string.IsNullOrWhiteSpace(Question) ? null : Question,
+            Profile = Samples.ProfileFor(ProfileName),
+            Lexicon = Samples.LexiconFor(LexiconName),
+            Data = data,
+            MaxKeyFigures = Clamp(MaxFiguresText, 4, 1, 8),
+            MinTableRows = Clamp(MinRowsText, 3, 2, 12),
+        };
+
+        var started = System.Diagnostics.Stopwatch.GetTimestamp();
+        var doc = TextLayoutEngine.Format(Text, options);
+        var elapsed = System.Diagnostics.Stopwatch.GetElapsedTime(started);
+
+        var style = Samples.StyleFor(StyleName);
+        Html = LayoutRenderers.Html(doc, style);
+        Json = PrettyJson(LayoutRenderers.Json(doc));
+        Plain = LayoutRenderers.PlainText(doc);
+        IsFallback = doc.IsFallback;
+        BlockCount = doc.Blocks.Count;
+        Diagnostics = doc.Diagnostics;
+        var noun = BlockCount == 1 ? "block" : "blocks";
+        var check = BlockCount == 0 ? "empty" : IsFallback ? "fallback" : "verified";
+        Status = $"{BlockCount} {noun} · {check} · {elapsed.TotalMilliseconds:0} ms";
+        Call = style == HtmlStyle.Email
+            ? "LayoutRenderers.Html(doc, HtmlStyle.Email)"
+            : "LayoutRenderers.Html(doc)";
+    }
+
+    private static string PrettyJson(string json)
+    {
+        try
+        {
+            using var parsed = System.Text.Json.JsonDocument.Parse(json);
+            return System.Text.Json.JsonSerializer.Serialize(parsed, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return json;
+        }
+    }
+
+    private static int Clamp(string text, int fallback, int min, int max)
+    {
+        if (!int.TryParse(text, out var n)) return fallback;
+        return Math.Clamp(n, min, max);
+    }
+
+    private async Task Copy()
+    {
+        var gen = ++_copyGen;
+        try
+        {
+            await JS.InvokeVoidAsync("textmagicCopy", Source);
+            Copied = true;
+        }
+        catch (JSException)
+        {
+            Copied = false;
+            return;
+        }
+        await Task.Delay(1400);
+        if (gen == _copyGen) Copied = false;
+    }
+
+    public void Dispose()
+    {
+        _pending?.Cancel();
+        _pending?.Dispose();
+    }
+}

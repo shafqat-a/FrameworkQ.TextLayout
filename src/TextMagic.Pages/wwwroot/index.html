@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Paste text and TextMagic returns the HTML. The engine runs in the browser." />
+    <title>TextMagic — lay text out</title>
+    <base href="/" />
+    <!-- Project Pages live under /TextMagic/. A custom domain or localhost stays at /. -->
+    <script>
+        (function () {
+            var path = location.pathname;
+            var name = "/TextMagic";
+            var at = path.indexOf(name);
+            if (at < 0) return;
+            var end = at + name.length;
+            if (path.length === end || path.charAt(end) === "/")
+                document.querySelector("base").setAttribute("href", path.slice(0, end) + "/");
+        })();
+    </script>
+    <link rel="stylesheet" href="css/site.css" />
+    <link rel="icon" href="favicon.svg" />
+</head>
+<body>
+    <div id="app">
+        <header class="top">
+            <div>
+                <p class="mark">TextMagic</p>
+                <p class="lede">Loading the engine…</p>
+            </div>
+        </header>
+    </div>
+    <div id="blazor-error-ui">
+        The engine did not start. Reload the page.
+        <a href="" class="reload">Reload</a>
+    </div>
+    <script src="js/site.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+</html>

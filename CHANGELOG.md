@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- A browser playground (`src/TextMagic.Pages`) runs the engine on GitHub Pages. Paste text and it returns the HTML.
+
 ## 1.0.1 — 2026-10-02
 
 Renamed the project from FrameworkQ.TextLayout to TextMagic.
